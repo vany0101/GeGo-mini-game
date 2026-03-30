@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GeGo: Mini Game</title>
+    
+    <link rel="icon" type="image/png" href="assets/gego.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="welcomePopUp" class="modal-overlay">
+        <div class="cursed-modal">
+            <h1 class="text-retro" style="font-size: 24px; margin-bottom: 20px;">Welcome to</h1>
+            <img class="breathing-img" src="assets/gego.png" alt="GeGo Mini Game">
+            <h2 class="text-retro" style="font-size: 18px; color: #ff0055; margin-bottom: 10px;">GeGo: Mini Game</h2>
+            <p style="font-size: 16px; color: #ccc; margin-bottom: 30px;">Reach Suguru before he leaves and don't get caught by the enemy</p>
+            <button id="startButton" class="btn-epic">START</button>
+        </div>
+    </div>
+
+    <div id="victoryPopUp" class="modal-overlay" style="display: none; opacity: 0;">
+        <div class="cursed-modal victory-border">
+            <h1 class="text-retro" style="font-size: 32px; color: #00ffff; margin-bottom: 20px;">STAGE COMPLETE!</h1>
+            <img class="breathing-img" src="assets/victory_image.png" alt="You Win">
+            <p style="font-size: 18px; color: #eee; margin-bottom: 30px; font-weight: bold;">You've made Suguru change his mind to stay with you.</p>
+            <button id="nextStageButton" class="btn-epic btn-victory">NEXT STAGE</button>
+        </div>
+    </div>
+
+    <div id="gameOverPopUp" class="modal-overlay" style="display: none; opacity: 0;">
+        <div class="cursed-modal danger-border">
+            <h1 class="text-retro" style="font-size: 32px; color: red; margin-bottom: 20px;">GAME OVER!</h1>
+            <img class="breathing-img" src="assets/gameover_image.png" alt="You Lose">
+            <p id="gameOverReasonText" style="font-size: 18px; color: #eee; margin-bottom: 30px; font-weight: bold;">You're Splited in half.</p>
+            <button id="restartButton" class="btn-epic">TRY AGAIN</button>
+        </div>
+    </div>
+
+    <div id="fallPopUp" class="modal-overlay" style="display: none; opacity: 0;">
+        <div class="cursed-modal danger-border">
+            <h1 class="text-retro" style="font-size: 32px; color: red; margin-bottom: 20px;">GAME OVER!</h1>
+            <img class="breathing-img" src="assets/gojo_fell_update.png" alt="Fell Down">
+            <p id="fallReasonText" style="font-size: 18px; color: #eee; margin-bottom: 30px; font-weight: bold;">You're fall into the endless and uncertain hopes.</p>
+            <button id="restartButtonFall" class="btn-epic">TRY AGAIN</button>
+        </div>
+    </div>
+
+    <div id="timeOutPopUp" class="modal-overlay" style="display: none; opacity: 0;">
+        <div class="cursed-modal danger-border">
+            <h1 class="text-retro" style="font-size: 32px; color: red; margin-bottom: 20px;">TIME OUT!</h1>
+            <img class="breathing-img" src="assets/gameover2_update_image.png" alt="Time is Up">
+            <p style="font-size: 18px; color: #eee; margin-bottom: 30px; font-weight: bold;">Time's Over! Suguru've made his mind to leave.</p>
+            <button id="restartButtonTimeOut" class="btn-epic">TRY AGAIN</button>
+        </div>
+    </div>
+
+<div id="mainGameContent" style="display:none;">
+        <h2 class="text-retro" style="font-size: 20px; margin-top: 20px;">GeGo: Mini Game</h2>
+        <p class="canvas-instruction">Press arrow to move SPACE to jump</p>
+        
+        <div style="position: relative; display: inline-block; max-width: 100%;">
+            <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+            
+            <div id="touchControls" class="touch-controls">
+                <div class="control-group">
+                    <button class="control-btn" id="btnLeft">◀</button>
+                    <button class="control-btn" id="btnRight">▶</button>
+                </div>
+                <button class="control-btn" id="btnJump">JUMP</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+
+</body>
+</html>
