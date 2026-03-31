@@ -18,7 +18,7 @@ const restartButtonTimeOut = document.getElementById("restartButtonTimeOut");
 const restartButtonFall = document.getElementById("restartButtonFall"); 
 
 let gameStarted = false; 
-let currentStage = 1; 
+let currentStage = 1; // GOJO SPAWN STAGE
 
 // AUDIO
 const bgm = new Audio("audio/bgm.mp3"); bgm.loop = true; bgm.volume = 0.4; 
@@ -49,12 +49,15 @@ let groundSegments = [];
 let enemies = [];
 let geto = { x: 0, y: 0, width: 60, height: 80, spriteCols: 2, spriteRows: 2, isHappy: false };
 
+let traps = []; // TRAP Code
+
 // --- STAGE MANAGER ---
 function loadStage(stageNumber) {
     x = 100; y = 800; velocityX = 0; velocityY = 0;
     facingRight = true; isGrounded = false;
     isGameOver = false; isLevelComplete = false;
     timeLeft = 60; gameFrame = 0; geto.isHappy = false;
+    traps = []; // RESET TRAPS EACH STAGES
 
     if (stageNumber === 1) {
         groundSegments = [ { x: 0, width: canvas.width } ];
@@ -87,6 +90,31 @@ function loadStage(stageNumber) {
         enemies = [
             { name: "Toji", x: 650, y: 700 - 110, width: 70, height: 110, patrolSpeed: 2, chaseSpeed: 4, speed: 2, detectionRadius: 300, img: tojiImg, spriteCols: 4, spriteRows: 2, currentFrame: 0, currentRow: 0, staggerFrames: 10, color: "darkgreen", minX: 650, maxX: 1300 },
             { name: "Sukuna", x: 1200, y: 500 - 110, width: 70, height: 110, patrolSpeed: 1.8, chaseSpeed: 4, speed: -1.8, detectionRadius: 400, img: sukunaImg, spriteCols: 4, spriteRows: 2, currentFrame: 0, currentRow: 0, staggerFrames: 12, color: "darkred", minX: 1200, maxX: 1630 }
+        ];
+    }
+        else if (stageNumber === 3) {
+        groundSegments = [
+            { x: 0, width: 300 } 
+        ];
+        platforms = [ //PLATFORMS ON STAGE 3 (FIXED)
+            { x: 350, y: 850, width: 1050, height: 30 }, // PLATFORM SUKUNA
+            { x: 750, y: 700, width: 250, height: 30 },  // PLATFORM TRAP 1
+            { x: 990, y: 700, width: 250, height: 30 },  // PLATFORM TRAP 2
+            { x: 100, y: 580, width: 600, height: 30 },  // PLATFORM TOJI
+            { x: 1300, y: 580, width: 300, height: 30 }, // PLATFORM KANAN
+            { x: 1500, y: 450, width: 150, height: 30 },  // PLATFORM KANAN ATAS
+            { x: 1000, y: 400, width: 350, height: 30 },  // PLATFORM SUGURU
+        ];
+        geto.x = 1000+ (350 / 2) - 30; 
+        geto.y = 400- 80; 
+        traps = [ // //TRAPS ON STAGE 3 (FIXED)
+            { x: 750, y: 700, width: 230, baseHeight: 45, offset: 0 }, //TRAP PLATFORM 2 KIRI
+            { x: 1350, y: 580, width: 230, baseHeight: 45, offset: 0 },  // TRAP PLATFORM KANAN   
+            { x: 990, y: 700, width: 230, baseHeight: 45, offset: Math.PI }  //TRAP PLATFORM 2 KIRI
+        ];
+        enemies = [
+            { name: "Toji", x: 100, y: 580 - 110, width: 70, height: 110, patrolSpeed: 2.5, chaseSpeed: 4.5, speed: 2.5, detectionRadius: 350, img: tojiImg, spriteCols: 4, spriteRows: 2, currentFrame: 0, currentRow: 0, staggerFrames: 10, color: "darkgreen", minX: 100, maxX: 700 },
+            { name: "Sukuna", x: 350, y: 850 - 110, width: 70, height: 110, patrolSpeed: 2.2, chaseSpeed: 4.2, speed: -2.2, detectionRadius: 400, img: sukunaImg, spriteCols: 4, spriteRows: 2, currentFrame: 0, currentRow: 0, staggerFrames: 12, color: "darkred", minX: 350, maxX: 1400 }
         ];
     }
 }
@@ -150,7 +178,7 @@ function resetGameFromFall() {
 function startTimer() {
     countdown = setInterval(function() {
         if (gameStarted && !isGameOver && !isLevelComplete) { 
-            timeLeft--;
+             timeLeft--; HAPUS  // UNTUK MENGAKTIFKAN WAKTU
             if (timeLeft <= 0) { timeLeft = 0; showTimeOutPopUp(); }
         }
     }, 1000);
@@ -176,12 +204,17 @@ nextStageButton.addEventListener("click", function() {
         document.body.style.overflow = "auto"; 
         canvas.style.display = "block"; 
 
+        // allow to go to next STAGE
         if (currentStage === 1) {
             currentStage = 2; 
             instantReset(); 
             gameStarted = true;
+        } else if (currentStage === 2) {
+            currentStage = 3; 
+            instantReset(); 
+            gameStarted = true;
         } else {
-            alert("CONGRATULATIONS! You have completed all stages and reached your Happy Ending!");
+            alert("CONGRATULATIONS! You have completed all stages We're going to update next stage, see ya soon!");
             location.reload(); 
         }
     }, 300);
@@ -235,6 +268,31 @@ function gameLoop() {
             ctx.fillRect(g.x, groundY, g.width, 130);
             ctx.fillStyle = "#666666"; 
             ctx.fillRect(g.x, groundY, g.width, 2);
+        }
+        // --- LOGIKA TRAPS ANIMATION (STAGE 3 - SMOOTH ANIMATION) ---
+        for (let t of traps) {
+            let rawSin = Math.sin((gameFrame / 240) * Math.PI + t.offset);
+            let currentSpikeHeight = Math.max(0, rawSin * t.baseHeight);
+            
+            ctx.fillStyle = "#111"; // Celah gelap penanda jebakan
+            ctx.fillRect(t.x + 10, t.y, t.width - 20, 6);
+
+            if (currentSpikeHeight > 0) {
+                ctx.fillStyle = "#ff0055"; // Duri neon pink
+                for (let s = 0; s < t.width; s += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(t.x + s, t.y);
+                    ctx.lineTo(t.x + s + 10, t.y - currentSpikeHeight);
+                    ctx.lineTo(t.x + s + 20, t.y);
+                    ctx.fill();
+                }
+
+                if (currentSpikeHeight > 10) { 
+                    if (checkCollision({x, y, width, height}, {x: t.x + 5, y: t.y - currentSpikeHeight, width: t.width - 10, height: currentSpikeHeight})) {
+                        showGameOverPopUp("You were impaled by a hidden spike trap.");
+                    }
+                }
+            }
         }
         
         for (let i = 0; i < platforms.length; i++) {
